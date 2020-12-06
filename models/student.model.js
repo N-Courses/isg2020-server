@@ -8,7 +8,8 @@ const StudentSchema = mongoose.Schema({
     email : {type : String  , required : true},
     password : String,
     genre : String,
-    score : {type : Number , default : 0}
+    score : {type : Number , default : 0},
+    photo : String
 })
 
 module.exports = mongoose.model('Student' , StudentSchema)

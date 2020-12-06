@@ -9,6 +9,8 @@ module.exports = (app) => {
     app.delete('/student/:id' , studentCtrl.remove)
 
 
+    app.post('/register' , studentCtrl.register);
+    app.post('/login' , studentCtrl.login);
 
     // controller 2
 

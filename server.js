@@ -4,10 +4,17 @@ const bodyparser = require('body-parser');
 const cors = require('cors');
 const mongoose = require('mongoose');
 
+const multipart = require('connect-multiparty');
+const multipartMiddleware = 
+multipart({uploadDir : './uploads'})
+
+
 //initialisation
 const app = express();
 app.use(bodyparser.json())
 app.use(cors());
+
+app.use(express.static('./'))
 mongoose.connect('mongodb://127.0.0.1:27017/isg2020'
     , { useNewUrlParser: true })
     .then(() => {
@@ -20,6 +27,11 @@ mongoose.connect('mongodb://127.0.0.1:27017/isg2020'
 
 app.get('/', (req, res) => {
     res.send("ok")
+})
+
+app.post('/upload' , multipartMiddleware , (req , res)=>{
+    var files = req.files.uploads;
+    res.send(files[0])
 })
 
 require('./routes')(app);

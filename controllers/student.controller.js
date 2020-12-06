@@ -1,5 +1,5 @@
 const Student = require('../models/student.model');
-
+const bcrypt = require('bcryptjs');
 exports.createStudent = (req, res) => {
     console.log(req.body);
     var new_student = new Student(req.body)
@@ -53,5 +53,52 @@ exports.remove = (req , res)=>{
     Student.remove({_id : id})
     .then((result)=>{
         res.send(result)
+    })
+}
+
+
+exports.register = (req , res)=>{
+    var email = req.body.email;
+
+    Student.findOne({email : email})
+    .then((result)=>{
+        if(result){
+            res.status(403).send({msg : "student exist"})
+        }else{
+            var student = new Student(req.body);
+
+                //generate private key
+
+                bcrypt.genSalt(10 ,(error , key)=>{
+
+                    //hash password
+                    bcrypt.hash(student.password ,key ,(hash_err , hash_pwd)=>{
+                        student.password = hash_pwd;
+                        student.save()
+                        .then((saved_student)=>{
+                            res.send(saved_student)
+                        })
+                    } )
+                })
+        }
+    })
+}
+
+exports.login = (req , res)=>{
+    var email = req.body.email;
+    var password = req.body.password;
+    Student.findOne({email : email})
+    .then((result)=>{
+        if(!result){
+            res.status(403).send({msg : 'undefined student'})
+        }else{
+            bcrypt.compare(password ,result.password , (err , success)=>{
+                if(!success){
+                    res.status(403).send({msg : 'invalid password'})
+                }else{
+                    res.send(result);
+                }
+            })
+        }
     })
 }
